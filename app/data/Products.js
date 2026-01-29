@@ -166,7 +166,7 @@ const products = [
     category: "Sleeveless",
     price: 55000,
     in_stock: true,
-    description: "Ultra-comfortable sleeveless. Perfect for relaxation. Perfect for relaxation.",
+    description: "Ultra-comfortable sleeveless. Perfect for relaxation.",
     specifications: {
       material: "100% Premium",
       fit: "Loose Fit",
@@ -177,6 +177,26 @@ const products = [
 
     ],
     image_url: "/product-images/product12.jpg",
+  },
+   {
+    id: 10,
+    title: "Leather Shorts",
+    category: "Shorts",
+    price: 40000,
+    in_stock: true,
+    description: "Ultra-comfortable Leather shorts. Perfect for casual outings.",
+    specifications: {
+      material: "100% Premium Leather",
+      fit: "Loose Fit",
+      washCare: "Machine wash gentle cycle",
+    },
+    images: [
+      "/product-images/product14.jpg",
+      "/product-images/product15.jpg",
+      "/product-images/product16.jpg",
+
+    ],
+    image_url: "/product-images/product14.jpg",
   }
 ];
 

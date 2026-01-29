@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const Hero = () => {
@@ -10,7 +11,7 @@ const Hero = () => {
     cta: "EXPLORE COLLECTION",
     bgColor: "bg-gradient-to-r from-gray-900 to-black",
     textColor: "text-white",
-    image: "images/AMZ_Image.png",
+    image: "/images/AMZ_Image.png", // Note: Added leading slash
     link: "/shop",
   };
 
@@ -23,16 +24,23 @@ const Hero = () => {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image using Next.js Image */}
       <div className="absolute inset-0">
+        <Image
+          src={heroData.image}
+          alt="Fashion Hero Background"
+          fill
+          className="object-cover object-center"
+          priority
+          quality={90}
+          sizes="100vw"
+          // Optional: Add placeholder or blur effect
+          // placeholder="blur"
+          // blurDataURL="data:image/jpeg;base64,..."
+        />
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroData.image})` }}
-        >
-          <div
-            className={`absolute inset-0 ${heroData.bgColor} opacity-30`}
-          ></div>
-        </div>
+          className={`absolute inset-0 ${heroData.bgColor} opacity-30`}
+        ></div>
       </div>
 
       {/* Animated Overlay */}
@@ -48,22 +56,19 @@ const Hero = () => {
                 : "-translate-x-10 opacity-0"
             }`}
           >
-            <h3
-              className={`text-5xl md:text-4xl lg:text-6xl font-bold mb-6 ${heroData.textColor} leading-tight animate-fade-up`}
-              style={{ animationDelay: "0.2s" }}
+            <h1 // Changed from h3 to h1 for better SEO
+              className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${heroData.textColor} leading-tight`}
             >
               {heroData.title}
-            </h3>
+            </h1>
             <p
-              className={`text-2xl md:text-2xl lg:text-3xl mb-10 ${heroData.textColor} opacity-90 animate-fade-up`}
-              style={{ animationDelay: "0.4s" }}
+              className={`text-xl sm:text-2xl md:text-3xl mb-8 md:mb-10 ${heroData.textColor} opacity-90`}
             >
               {heroData.subtitle}
             </p>
             <Link
               href={heroData.link}
-              className="inline-block bg-white text-black px-10 py-4 text-lg font-bold hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-2xl animate-fade-up hover:shadow-3xl active:scale-95"
-              style={{ animationDelay: "0.6s" }}
+              className="inline-block bg-white text-black px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-bold hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl active:scale-95"
             >
               {heroData.cta}
             </Link>

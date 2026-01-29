@@ -26,11 +26,10 @@ const products = [
     category: "Jersey",
     price: 55000,
     in_stock: true,
-    description: "High-performance sleeveless jersey for active lifestyles. Moisture-wicking fabric and ergonomic design.",
+    description: "High-performance jersey for active lifestyles. Moisture-wicking fabric and ergonomic design.",
     specifications: {
       material: "100% Premium",
       fit: "Athletic Fit",
-      sleeve: "Sleeveless",
       washCare: "Machine wash cold, do not tumble dry",
     },
     images: [

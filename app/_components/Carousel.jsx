@@ -1,122 +1,77 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const Carousel = () => {
-  const slides = [
-    {
-      id: 1,
-      title: "Style That Makes a Statement",
-      subtitle: "Elevate your everyday look with timeless fashion pieces.",
-      cta: "EXPLORE COLLECTION",
-      bgColor: "bg-gradient-to-r from-gray-900 to-black",
-      textColor: "text-white",
-      image: "images/hero-banner-slide1-high.jpg",
-      link: "/shop",
-    },
-    {
-      id: 2,
-      title: "Designed for Modern Elegance",
-      subtitle: "Where comfort meets refined craftsmanship.",
-      cta: "DISCOVER MORE",
-      bgColor: "bg-gradient-to-r from-gray-800 to-gray-900",
-      textColor: "text-white",
-      image: "images/hero-banner-slide2-high.jpg",
-      link: "/shop",
-    },
-  ];
-
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [textAnimation, setTextAnimation] = useState("slide-in");
-
-  // Auto-slide every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Trigger text slide-out before changing slide
-      setTextAnimation("slide-out");
-
-      setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
-        setTextAnimation("slide-in");
-      }, 500);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [slides.length]);
-
-  // Manual slide change
-  const goToSlide = (index) => {
-    setTextAnimation("slide-out");
-    setTimeout(() => {
-      setCurrentSlide(index);
-      setTextAnimation("slide-in");
-    }, 300);
+const Hero = () => {
+  const heroData = {
+    title: "Style That Makes Sense",
+    subtitle: "Elevate your everyday look with timeless fashion pieces.",
+    cta: "EXPLORE COLLECTION",
+    bgColor: "bg-gradient-to-r from-gray-900 to-black",
+    textColor: "text-white",
+    image: "images/AMZ_Image.png",
+    link: "/shop",
   };
+
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation on mount
+    setIsLoaded(true);
+  }, []);
 
   return (
     <div className="relative h-screen overflow-hidden">
-      {/* Background Images */}
-      <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
+      {/* Background Image */}
+      <div className="absolute inset-0">
         <div
-          className="absolute inset-0 bg-cover"
-          style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroData.image})` }}
         >
           <div
-            className={`absolute inset-0 ${slides[currentSlide].bgColor} opacity-30`}
+            className={`absolute inset-0 ${heroData.bgColor} opacity-30`}
           ></div>
         </div>
       </div>
+
+      {/* Animated Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/30"></div>
 
       {/* Content */}
       <div className="relative h-full flex items-center justify-start">
         <div className="container mx-auto px-4 text-start">
           <div
-            className={`max-w-3xl mx-auto transform transition-all duration-1000 ${
-              textAnimation === "slide-in"
+            className={`max-w-3xl mx-auto transform transition-all duration-1000 ease-out ${
+              isLoaded
                 ? "translate-x-0 opacity-100"
-                : textAnimation === "slide-out"
-                  ? "-translate-x-full opacity-0"
-                  : ""
+                : "-translate-x-10 opacity-0"
             }`}
           >
-            <h1
-              className={`text-5xl md:text-7xl font-bold mb-6 ${slides[currentSlide].textColor} leading-tight`}
+            <h3
+              className={`text-5xl md:text-4xl lg:text-6xl font-bold mb-6 ${heroData.textColor} leading-tight animate-fade-up`}
+              style={{ animationDelay: "0.2s" }}
             >
-              {slides[currentSlide].title}
-            </h1>
+              {heroData.title}
+            </h3>
             <p
-              className={`text-xl md:text-2xl mb-10 ${slides[currentSlide].textColor} opacity-90`}
+              className={`text-2xl md:text-2xl lg:text-3xl mb-10 ${heroData.textColor} opacity-90 animate-fade-up`}
+              style={{ animationDelay: "0.4s" }}
             >
-              {slides[currentSlide].subtitle}
+              {heroData.subtitle}
             </p>
             <Link
-              href={slides[currentSlide].link}
-              className="bg-white cursor-pointer text-black px-10 py-4 text-lg font-bold hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-2xl"
+              href={heroData.link}
+              className="inline-block bg-white text-black px-10 py-4 text-lg font-bold hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-2xl animate-fade-up hover:shadow-3xl active:scale-95"
+              style={{ animationDelay: "0.6s" }}
             >
-              {slides[currentSlide].cta}
+              {heroData.cta}
             </Link>
           </div>
         </div>
-      </div>
-
-      {/* Slide Indicators */}
-      <div className="absolute bottom-10 left-0 right-0 flex justify-center space-x-3">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide
-                ? "bg-white w-8"
-                : "bg-gray-400 hover:bg-gray-300"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
     </div>
   );
 };
 
-export default Carousel;
+export default Hero;

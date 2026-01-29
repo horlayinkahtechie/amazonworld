@@ -5,6 +5,43 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import products from "../../data/Products";
 
+// Create the viewTracker utility inline since you haven't created the file yet
+const VIEWS_KEY = "product-views";
+
+function getProductViews() {
+  if (typeof window !== "undefined") {
+    const viewsData = localStorage.getItem(VIEWS_KEY);
+    return viewsData ? JSON.parse(viewsData) : {};
+  }
+  return {};
+}
+
+function trackProductView(productId) {
+  if (typeof window !== "undefined") {
+    const viewsData = getProductViews();
+    const productIdStr = productId.toString();
+
+    // Increment view count
+    if (!viewsData[productIdStr]) {
+      viewsData[productIdStr] = 1;
+    } else {
+      viewsData[productIdStr] += 1;
+    }
+
+    localStorage.setItem(VIEWS_KEY, JSON.stringify(viewsData));
+    return viewsData[productIdStr];
+  }
+  return 0;
+}
+
+function getProductViewCount(productId) {
+  if (typeof window !== "undefined") {
+    const viewsData = getProductViews();
+    return viewsData[productId.toString()] || 0;
+  }
+  return 0;
+}
+
 export default function ProductDetails() {
   const params = useParams();
   const router = useRouter();
@@ -14,11 +51,16 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [viewCount, setViewCount] = useState(0);
 
   useEffect(() => {
     const product = products.find((p) => p.id === productId);
     if (product) {
       setSelectedProduct(product);
+
+      // Track this view and update the count
+      const count = trackProductView(productId);
+      setViewCount(count);
     } else {
       router.push("/shop");
     }
@@ -145,6 +187,31 @@ export default function ProductDetails() {
                 )}
               </div>
             ))}
+
+            {/* View Count Insight */}
+            <div className="ml-auto flex items-center text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+              <svg
+                className="w-4 h-4 mr-1 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              <span className="font-semibold text-blue-600">{viewCount}</span>
+              <span className="ml-1">people viewed this product</span>
+            </div>
           </nav>
         </div>
       </div>
@@ -210,6 +277,33 @@ export default function ProductDetails() {
                   Out of Stock
                 </span>
               )}
+            </div>
+
+            {/* View Counter - Alternative placement (optional, remove if you only want it in breadcrumb) */}
+            <div className="flex items-center text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+              <svg
+                className="w-5 h-5 mr-2 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              <div className="text-sm">
+                <span className="font-semibold">{viewCount} people</span> have
+                viewed this product
+              </div>
             </div>
 
             {/* Description */}

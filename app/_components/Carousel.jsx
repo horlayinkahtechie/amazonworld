@@ -7,20 +7,19 @@ const Carousel = () => {
   const slides = [
     {
       id: 1,
-      title: "Wear Confidence, Wear Drip",
-      subtitle: "Experience clothing that speaks the language of elegance.",
-      cta: "SHOP NOW",
+      title: "Style That Makes a Statement",
+      subtitle: "Elevate your everyday look with timeless fashion pieces.",
+      cta: "EXPLORE COLLECTION",
       bgColor: "bg-gradient-to-r from-gray-900 to-black",
       textColor: "text-white",
       image: "images/hero-banner-slide1-high.jpg",
       link: "/shop",
     },
-
     {
       id: 2,
-      title: "Premium Craftsmanship",
-      subtitle: "Every stitch tells a story of dedication and quality.",
-      cta: "VIEW DETAILS",
+      title: "Designed for Modern Elegance",
+      subtitle: "Where comfort meets refined craftsmanship.",
+      cta: "DISCOVER MORE",
       bgColor: "bg-gradient-to-r from-gray-800 to-gray-900",
       textColor: "text-white",
       image: "images/hero-banner-slide2-high.jpg",
@@ -60,7 +59,7 @@ const Carousel = () => {
       {/* Background Images */}
       <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover"
           style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
         >
           <div

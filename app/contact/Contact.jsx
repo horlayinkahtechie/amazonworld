@@ -1,3 +1,4 @@
+import { InstagramIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -166,27 +167,27 @@ export default function ContactPage() {
             {[
               {
                 name: "Snapchat",
-                // icon: ,
+                icon: "Snapchat",
                 link: "https://snapchat.com/amzz.zz25",
               },
 
               {
                 name: "TikTok",
-                // icon: "bg-gradient-to-br from-black to-gray-800",
+                icon: "TikTok",
                 link: "https://tiktok.com/amazonwrld1",
               },
               {
                 name: "Instagram",
-                // icon: "bg-gradient-to-br from-red-600 to-red-800",
+                icon: <InstagramIcon />,
                 link: "https://instagram.com/amz_wrld",
               },
             ].map((platform) => (
-              <a key={platform.name} href="#" className="group">
+              <a key={platform.name} href={platform.link} className="group">
                 <div
                   className={`w-16 h-16 ${platform.color} rounded-2xl flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-110`}
                 >
-                  <span className="text-white font-bold text-sm">
-                    {platform.name.charAt(0)}
+                  <span className="text-black font-bold text-sm">
+                    {platform.icon}
                   </span>
                 </div>
                 <p className="text-center mt-2 text-sm font-medium text-gray-700">

@@ -7,7 +7,7 @@ const HeroSplit = () => {
       {/* Left Section */}
       <div className="relative w-full md:w-1/2 h-full group cursor-pointer">
         <img
-          src="/product-images/fashion-model-black-dls-high.jpg"
+          src="/product-images/Image1.png"
           alt="Style meets quality"
           className="absolute inset-0 w-full h-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700"
         />
@@ -28,7 +28,7 @@ const HeroSplit = () => {
       {/* Right Section */}
       <div className="relative w-full md:w-1/2 h-full group cursor-pointer">
         <img
-          src="/product-images/lady-graphic-woke-streetwear-high.jpg"
+          src="/product-images/Image2.jpg"
           alt="Stay ahead of the trend"
           className="absolute inset-0 w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-700"
         />

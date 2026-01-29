@@ -46,8 +46,6 @@ const Navbar = () => {
 
   // Load cart count on component mount
   useEffect(() => {
-    updateCartCount();
-
     // Listen for cart updates from other components
     const handleCartUpdate = () => {
       updateCartCount();

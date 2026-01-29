@@ -97,7 +97,7 @@ export default function Footer() {
             href="mailto:support@modernstreet.com"
             className="block text-gray-800 underline font-medium text-sm"
           >
-            support@amazonworld.com
+            madubugochinonso2018@gmail.com
           </a>
           <div className="pt-2">
             {/* Simple TikTok Icon Placeholder */}

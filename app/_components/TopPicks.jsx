@@ -1,97 +1,38 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+
 import { useRouter } from "next/navigation";
+import productsData from "../data/Products";
+import Link from "next/link";
 
-const products = [
-  {
-    id: 1,
-    title: "DL 2018 Tee",
-    category: "Shirts",
-    price: 60000,
-    in_stock: true,
-    description:
-      "Premium quality cotton t-shirt with modern design and comfortable fit. Perfect for casual wear and everyday style.",
-    specifications: {
-      material: "100% Premium Cotton",
-      fit: "Regular Fit",
-      sleeve: "Short Sleeve",
-      washCare: "Machine wash cold, tumble dry low",
-    },
-    images: ["/product-images/product2.jpg", "/product-images/product8.jpg"],
-    image_url: "/product-images/product2.jpg",
-  },
-  {
-    id: 2,
-    title: "Drippo Lifestyle Sleeveless",
-    category: "Activewear",
-    price: 80000,
-    in_stock: true,
-    description:
-      "High-performance sleeveless shirt for active lifestyles. Moisture-wicking fabric and ergonomic design.",
-    specifications: {
-      material: "Polyester-Spandex Blend",
-      fit: "Athletic Fit",
-      sleeve: "Sleeveless",
-      washCare: "Machine wash cold, do not tumble dry",
-    },
-    images: ["/product-images/product1.jpg", "/product-images/product9.jpg"],
-    image_url: "/product-images/product1.jpg",
-  },
-  {
-    id: 3,
-    title: "I'm Broken Tee",
-    category: "Shirts",
-    price: 60000,
-    in_stock: true,
-    description:
-      "Edgy graphic tee with unique distressed design. Made from soft, breathable cotton for all-day comfort.",
-    specifications: {
-      material: "100% Organic Cotton",
-      fit: "Oversized Fit",
-      sleeve: "Short Sleeve",
-      washCare: "Hand wash recommended",
-    },
-    images: ["/product-images/product3.jpg", "/product-images/product10.jpg"],
-    image_url: "/product-images/product3.jpg",
-  },
-  {
-    id: 4,
-    title: "Woke Civilian",
-    category: "Premium",
-    price: 110000,
-    in_stock: true,
-    description:
-      "Luxury hoodie made from premium French terry cotton. Features embroidered logo and reinforced stitching.",
-    specifications: {
-      material: "French Terry Cotton",
-      fit: "Relaxed Fit",
-      sleeve: "Long Sleeve",
-      washCare: "Dry clean recommended",
-    },
-    images: ["product-images/product4.jpg", "/product-images/product10.jpg"],
-    image_url: "product-images/product4.jpg",
-  },
-];
-
-export default function TopPicks() {
+export default function ShopPage() {
   const router = useRouter();
 
-  const handleRedirectToCheckout = (productId) => {
+  const getRandomProducts = (productsArray, count = 4) => {
+    const shuffled = [...productsArray].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
+  // Get random products (adjust the count as needed)
+  const randomProducts = getRandomProducts(productsData, 4);
+
+  const handleProductClick = (productId) => {
     router.push(`/shop/${productId}`);
   };
+
   return (
-    <section className="bg-white py-12 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-baseline mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-black">
-            Popular Products
-          </h2>
+    <div className="bg-white min-h-screen font-sans text-black">
+      {/* Page Title Section */}
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 pb-5">
+          <div className="mb-10">
+            <h1 className="text-4xl font-bold mb-2">Popular Collections</h1>
+            <p className="text-gray-500">
+              Checkout our most popular collections
+            </p>
+          </div>
           <Link
-            href="/shop"
-            className="group flex items-center text-[14px] font-bold tracking-[0.2em] text-[#C5A25D] uppercase transition-hover"
+            href="/products"
+            className="group flex lg:justify-end justify-start items-center text-[14px] font-bold tracking-[0.2em] text-[#C5A25D] uppercase transition-hover"
           >
             View All
             <span className="ml-2 text-lg transform group-hover:translate-x-1 transition-transform">
@@ -101,42 +42,50 @@ export default function TopPicks() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {products.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {randomProducts.map((product) => (
             <div
               key={product.id}
-              className="border border-gray-300 p-6 flex flex-col min-h-112.5 group cursor-pointer hover:border-black transition-colors"
+              onClick={() => handleProductClick(product.id)}
+              className="border border-gray-200 p-6 flex flex-col group cursor-pointer relative rounded-lg hover:shadow-xl transition-shadow duration-300 hover:border-gray-300"
             >
               {/* Image Container */}
-              <div className="grow flex items-center justify-center p-4">
+              <div className="flex-grow flex items-center justify-center p-4 min-h-[300px] bg-gray-50 rounded-lg">
                 <img
                   src={product.image_url}
                   alt={product.title}
-                  className="max-w-full max-h-64 object-contain"
+                  className="max-w-full max-h-64 object-contain transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
 
-              {/* Product Info */}
-              <div className="flex justify-between items-end mt-4">
-                <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-gray-900 leading-tight">
-                    {product.title}
-                  </h3>
-                  <p className="text-lg font-bold text-black">
-                    ₦ {product.price}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleRedirectToCheckout(product.id)}
-                  className="text-[13px] bg-black p-4 cursor-pointer text-white font-bold transform group-hover:translate-x-1 transition-transform"
-                >
-                  Buy Now
-                </button>
+              {/* Info Section */}
+              <div className="mt-6 space-y-1">
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                  {product.category}
+                </p>
+                <h3 className="text-md font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                  {product.title}
+                </h3>
+                <p className="text-lg font-black pt-2">
+                  ₦ {product.price.toLocaleString()}
+                </p>
               </div>
+
+              {/* Out of Stock Label */}
+              {!product.in_stock && (
+                <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-4 py-1 rounded-bl-lg uppercase shadow-md">
+                  Out of Stock
+                </div>
+              )}
+
+              {/* Quick View Button */}
+              <button className="mt-4 cursor-pointer w-full bg-gray-900 text-white py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                View Details
+              </button>
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </main>
+    </div>
   );
 }

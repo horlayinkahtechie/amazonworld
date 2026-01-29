@@ -74,10 +74,10 @@ const products = [
       washCare: "Dry clean recommended",
     },
     images: [
-      "product-images/product4.jpg",
+      "/product-images/product4.jpg",
       "/product-images/product10.jpg"
     ],
-    image_url: "product-images/product4.jpg",
+    image_url: "/product-images/product4.jpg",
     
   },
   {

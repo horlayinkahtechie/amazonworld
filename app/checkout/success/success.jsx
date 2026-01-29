@@ -9,16 +9,75 @@ export default function CheckoutSuccessPage() {
   const orderId = searchParams.get("orderId");
   const paymentRef = searchParams.get("paymentRef");
   const [order, setOrder] = useState(null);
+  const [emailStatus, setEmailStatus] = useState({
+    sent: false,
+    loading: false,
+    error: null,
+  });
+
+  // Function to send emails
+  const sendOrderEmails = async (orderData) => {
+    setEmailStatus({ sent: false, loading: true, error: null });
+
+    try {
+      const response = await fetch("/api/send-order-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order: orderData,
+          paymentRef: paymentRef,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send emails");
+      }
+
+      const result = await response.json();
+      setEmailStatus({ sent: true, loading: false, error: null });
+      return result;
+    } catch (error) {
+      console.error("Email sending error:", error);
+      setEmailStatus({ sent: false, loading: false, error: error.message });
+    }
+  };
 
   useEffect(() => {
-    if (orderId) {
-      const orders = JSON.parse(
-        localStorage.getItem("amazon-world-orders") || "[]",
-      );
-      const foundOrder = orders.find((o) => o.id === orderId);
-      setOrder(foundOrder || null);
-    }
-  }, [orderId]);
+    const loadOrderAndSendEmails = async () => {
+      if (orderId) {
+        const orders = JSON.parse(
+          localStorage.getItem("amazon-world-orders") || "[]",
+        );
+        const foundOrder = orders.find((o) => o.id === orderId);
+
+        if (foundOrder) {
+          setOrder(foundOrder);
+
+          // Only send emails if not already sent for this order
+          if (!foundOrder.emailsSent) {
+            // Send emails
+            await sendOrderEmails(foundOrder);
+
+            // Mark emails as sent in localStorage
+            const updatedOrders = orders.map((o) => {
+              if (o.id === orderId) {
+                return { ...o, emailsSent: true };
+              }
+              return o;
+            });
+            localStorage.setItem(
+              "amazon-world-orders",
+              JSON.stringify(updatedOrders),
+            );
+          }
+        }
+      }
+    };
+
+    loadOrderAndSendEmails();
+  }, [orderId, paymentRef]);
 
   if (!order) {
     return (
@@ -62,6 +121,52 @@ export default function CheckoutSuccessPage() {
               Thank you for your purchase, {order.customer.firstName}! Your
               order #{orderId} has been confirmed.
             </p>
+
+            {/* Email Status Indicator */}
+            <div className="mt-6">
+              {emailStatus.loading && (
+                <div className="inline-flex items-center bg-white/20 text-white px-4 py-2 rounded-full">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Sending confirmation emails...
+                </div>
+              )}
+              {emailStatus.sent && (
+                <div className="inline-flex items-center bg-white/20 text-white px-4 py-2 rounded-full">
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Confirmation emails sent!
+                </div>
+              )}
+              {emailStatus.error && (
+                <div className="inline-flex items-center bg-red-500/20 text-white px-4 py-2 rounded-full">
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.342 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                  Email failed to send. Please contact support.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -124,6 +229,42 @@ export default function CheckoutSuccessPage() {
                 </div>
               </div>
             </div>
+
+            {/* Order Items */}
+            <div className="mt-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Order Items
+              </h3>
+              <div className="space-y-4">
+                {order.items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center border-b border-gray-100 pb-4 last:border-b-0"
+                  >
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="ml-4 flex-1">
+                      <h4 className="font-medium text-gray-900">
+                        {item.title}
+                      </h4>
+                      <div className="flex justify-between text-sm text-gray-600 mt-1">
+                        <span>
+                          Qty: {item.quantity} × ₦{item.price.toLocaleString()}
+                        </span>
+                        <span className="font-semibold">
+                          ₦{(item.price * item.quantity).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Next Steps */}
@@ -155,9 +296,22 @@ export default function CheckoutSuccessPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/shop"
-              className="bg-transparent border-2 border-gray-300 text-gray-900 px-8 py-3 rounded-full font-bold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105"
+              className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center"
             >
               Continue Shopping
+              <svg
+                className="w-5 h-5 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
             </Link>
           </div>
         </div>

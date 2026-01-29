@@ -1,10 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import CheckoutSuccessPage from "./success";
 
 export default function page() {
   return (
     <div>
-      <CheckoutSuccessPage />
+      <Suspense>
+        <CheckoutSuccessPage />
+      </Suspense>
     </div>
   );
 }

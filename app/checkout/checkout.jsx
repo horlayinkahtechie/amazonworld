@@ -563,23 +563,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Terms and Conditions */}
-                <div className="mb-6">
-                  <label className="flex items-start">
-                    <input type="checkbox" required className="mt-1 mr-3" />
-                    <span className="text-sm text-gray-600">
-                      I agree to the{" "}
-                      <Link
-                        href="/terms"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Terms & Conditions
-                      </Link>{" "}
-                      and authorize this payment
-                    </span>
-                  </label>
-                </div>
-
                 {/* Pay with Paystack Button */}
                 <button
                   onClick={handleSubmit}

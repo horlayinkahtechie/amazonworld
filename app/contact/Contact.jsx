@@ -1,6 +1,7 @@
 import { InstagramIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { BiLogoSnapchat, BiLogoTiktok } from "react-icons/bi";
 
 export default function ContactPage() {
   const contactMethods = [
@@ -21,15 +22,6 @@ export default function ContactPage() {
       link: "tel:+2349077080174",
       color: "bg-green-100",
       iconColor: "text-green-600",
-    },
-    {
-      icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z",
-      title: "Office",
-      details: "123 Fashion Street, Victoria Island",
-      subtext: "Lagos, Nigeria",
-      link: "https://maps.google.com",
-      color: "bg-purple-100",
-      iconColor: "text-purple-600",
     },
   ];
 
@@ -167,13 +159,13 @@ export default function ContactPage() {
             {[
               {
                 name: "Snapchat",
-                icon: "Snapchat",
+                icon: <BiLogoSnapchat />,
                 link: "https://snapchat.com/amzz.zz25",
               },
 
               {
                 name: "TikTok",
-                icon: "TikTok",
+                icon: <BiLogoTiktok />,
                 link: "https://tiktok.com/amazonwrld1",
               },
               {

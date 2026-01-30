@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { BiLogoSnapchat, BiLogoTiktok } from "react-icons/bi";
+import { InstagramIcon } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -99,11 +101,32 @@ export default function Footer() {
           >
             madubugochinonso2018@gmail.com
           </a>
-          <div className="pt-2">
+          <div className="pt-2 flex gap-4">
             {/* Simple TikTok Icon Placeholder */}
-            <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity">
-              <span className="text-white text-[10px]">T</span>
-            </div>
+            <Link
+              href="https://tiktok.com/amazonwrld1"
+              className="w-10 h-10 bg-black rounded-full flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity"
+            >
+              <span className="text-white text-[18px]">
+                <BiLogoTiktok />
+              </span>
+            </Link>
+            <Link
+              href="https://instagram.com/amz_wrld"
+              className="w-10 h-10 bg-black rounded-full flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity"
+            >
+              <span className="text-white text-[18px]">
+                <InstagramIcon />
+              </span>
+            </Link>
+            <Link
+              href="https://snapchat.com/amzz.zz25"
+              className="w-10 h-10 bg-black rounded-full flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity"
+            >
+              <span className="text-white text-[18px]">
+                <BiLogoSnapchat />
+              </span>
+            </Link>
           </div>
         </div>
       </div>

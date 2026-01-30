@@ -562,9 +562,24 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 </div>
+                <Link
+                  href="/complete-purchase"
+                  className={`w-full py-4 cursor-pointer rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center ${isProcessing || !paystackLoaded ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700 transform hover:scale-[1.02]"}`}
+                >
+                  <>
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                    Pay ₦{total.toLocaleString()}
+                  </>
+                </Link>
 
                 {/* Pay with Paystack Button */}
-                <button
+                {/* <button
                   onClick={handleSubmit}
                   disabled={isProcessing || !paystackLoaded}
                   className={`w-full py-4 cursor-pointer rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center ${isProcessing || !paystackLoaded ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700 transform hover:scale-[1.02]"}`}
@@ -588,7 +603,7 @@ export default function CheckoutPage() {
                       Pay ₦{total.toLocaleString()}
                     </>
                   )}
-                </button>
+                </button> */}
 
                 {/* Continue Shopping */}
                 <Link

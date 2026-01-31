@@ -5,550 +5,302 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const Navbar = () => {
-  const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Collections", href: "/collections" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
-  ];
-
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Function to get cart count from localStorage
-  const getCartCount = () => {
-    if (typeof window !== "undefined") {
-      const cartData = localStorage.getItem("amazon-world-cart");
-      if (cartData) {
-        try {
-          const cart = JSON.parse(cartData);
-          // Count unique products (not total quantity)
-          const uniqueProductCount = cart.reduce((count, item) => {
-            return count + 1; // Each item in cart counts as 1, regardless of quantity
-          }, 0);
-          return uniqueProductCount;
-        } catch (error) {
-          console.error("Error parsing cart data:", error);
-          return 0;
-        }
-      }
-    }
-    return 0;
-  };
-
-  // Function to update cart count
-  const updateCartCount = () => {
-    const count = getCartCount();
-    setCartCount(count);
-  };
-
-  // Load cart count on component mount
+  // Sync Cart Logic
   useEffect(() => {
-    // Listen for cart updates from other components
-    const handleCartUpdate = () => {
-      updateCartCount();
+    const updateCart = () => {
+      const data = localStorage.getItem("amazon-world-cart");
+      if (data) setCartCount(JSON.parse(data).length);
     };
-
-    // Add event listener for custom cart-updated event
-    window.addEventListener("cart-updated", handleCartUpdate);
-
-    // Also listen for storage changes (in case cart is modified in another tab)
-    const handleStorageChange = (e) => {
-      if (e.key === "amazon-world-cart") {
-        updateCartCount();
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Set up interval to check for cart updates (fallback)
-    const intervalId = setInterval(updateCartCount, 2000);
-
-    return () => {
-      window.removeEventListener("cart-updated", handleCartUpdate);
-      window.removeEventListener("storage", handleStorageChange);
-      clearInterval(intervalId);
-    };
+    updateCart();
+    window.addEventListener("cart-updated", updateCart);
+    return () => window.removeEventListener("cart-updated", updateCart);
   }, []);
 
-  const handleSearchToggle = () => {
-    setIsSearchOpen(!isSearchOpen);
-    if (isSearchOpen) {
-      setSearchQuery("");
-    }
-  };
-
-  const handleMobileMenuToggle = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      console.log("Searching for:", searchQuery);
-      // You can implement search functionality here
-      // For example: router.push(`/search?q=${searchQuery}`);
-    }
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
-  // Function to handle cart click (optional - you can add more logic here)
-  const handleCartClick = () => {
-    // Update cart count when cart icon is clicked (just to be sure it's current)
-    updateCartCount();
-  };
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
-      <nav className="top-0 left-0 right-0 z-50 bg-white/50 backdrop-blur-md">
-        <div className="container mx-auto px-4 py-4">
+      {/* --- DESKTOP VIEW --- */}
+      <nav
+        className={`hidden lg:flex fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-lg shadow-sm py-2" : "bg-white/90 backdrop-blur-md py-4"}`}
+      >
+        <div className="container mx-auto px-6 xl:px-12">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/">
-              <div className="shrink-0">
+            {/* Left: Logo */}
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="relative w-12 h-12">
                 <Image
                   src="/images/amzworld-logo.jpg"
-                  alt="Amazon World Logo"
-                  width={70}
-                  height={70}
-                  className="rounded-lg"
+                  alt="AMZ World Logo"
+                  fill
+                  className="object-contain"
+                  priority
                 />
               </div>
             </Link>
 
-            {/* Desktop Navigation - Hidden when search is open */}
-            {!isSearchOpen && (
-              <div className="hidden md:flex items-center space-x-8">
-                {navItems.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-white hover:text-white transition-colors duration-300 font-medium relative group"
-                  >
-                    {item.name}
-                    {/* Underline effect */}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-1/2"></span>
-                  </a>
-                ))}
-              </div>
-            )}
-
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:flex items-center space-x-4">
-              {/* Search Bar Container */}
-              <div
-                className={`transition-all duration-500 ease-in-out ${
-                  isSearchOpen ? "w-80" : "w-0 overflow-hidden"
-                }`}
-              >
-                <form onSubmit={handleSearchSubmit} className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search products..."
-                    className="w-full px-4 py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                    autoFocus={isSearchOpen}
-                  />
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <svg
-                      className="w-4 h-4 text-gray-700"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-                </form>
-              </div>
-
-              {/* Search Toggle Button */}
-              <button
-                onClick={handleSearchToggle}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-300"
-                aria-label={isSearchOpen ? "Close search" : "Open search"}
-              >
-                {isSearchOpen ? (
-                  <svg
-                    className="w-6 h-6 text-black"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                )}
-              </button>
-
-              {/* Cart Icon */}
+            {/* Center: Navigation Links */}
+            <div className="flex items-center space-x-8">
               <Link
-                href="/cart"
-                onClick={handleCartClick}
-                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors duration-300"
-                aria-label="Shopping cart"
+                href="/"
+                className="text-gray-700 hover:text-black font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
               >
+                Home
+              </Link>
+              <Link
+                href="/collections"
+                className="text-gray-700 hover:text-black font-medium transition-colors duration-200 text-sm uppercase tracking-wide flex items-center space-x-1"
+              >
+                <span>Collections</span>
+              </Link>
+              <Link
+                href="/about"
+                className="text-gray-700 hover:text-black font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
+              >
+                About us
+              </Link>
+              <Link
+                href="/contact"
+                className="text-gray-700 hover:text-black font-medium transition-colors duration-200 text-sm uppercase tracking-wide"
+              >
+                Contact
+              </Link>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center space-x-6">
+              {/* Search Bar */}
+              <div className="relative hidden xl:block">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  className="w-64 px-4 py-2 pl-10 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black/20 transition-all"
+                />
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                {/* Dynamic Cart Badge */}
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+              </div>
 
-              {/* CTA Button - Hidden when search is open */}
-              {!isSearchOpen && (
-                <Link
-                  href="/collections"
-                  className="hidden md:block cursor-pointer bg-black text-white px-6 py-2 rounded-full font-semibold hover:bg-black/40 transition-colors duration-300"
+              {/* Cart Icon */}
+              <Link href="/cart" className="relative group p-2">
+                <div className="relative">
+                  <svg
+                    className="w-6 h-6 text-gray-700 group-hover:text-black transition-colors duration-200"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 11V7a4 4 0 10-8 0v4M5 9h14l1 12H4L5 9z"
+                    />
+                  </svg>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold animate-pulse">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* --- MOBILE TOP NAVBAR (Logo + Search Bar) --- */}
+      <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between py-3">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="relative w-10 h-10">
+                <Image
+                  src="/images/amzworld-logo.jpg"
+                  alt="AMZ World Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </Link>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md mx-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  className="w-full px-4 py-2 pl-10 bg-gray-50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
+                />
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  SHOP NOW
-                </Link>
-              )}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
             </div>
 
-            {/* Mobile View - Icons */}
-            <div className="flex md:hidden items-center space-x-4">
-              {/* Search Icon for Mobile */}
-              <button
-                onClick={handleSearchToggle}
-                className="p-2 hover:bg-gray-100 text-white rounded-full transition-colors duration-300"
-                aria-label={isSearchOpen ? "Close search" : "Open search"}
-              >
-                {isSearchOpen ? (
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                )}
-              </button>
-
-              {/* Cart Icon for Mobile */}
-              <Link
-                href="/cart"
-                onClick={handleCartClick}
-                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors duration-300"
-                aria-label="Shopping cart"
-              >
+            {/* Cart Icon */}
+            <Link href="/cart" className="relative p-2">
+              <div className="relative">
                 <svg
                   className="w-6 h-6 text-gray-700"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    strokeWidth={1.5}
+                    d="M16 11V7a4 4 0 10-8 0v4M5 9h14l1 12H4L5 9z"
                   />
                 </svg>
-                {/* Dynamic Cart Badge for Mobile */}
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {cartCount}
                   </span>
                 )}
-              </Link>
-
-              {/* Mobile menu button */}
-              <button
-                onClick={handleMobileMenuToggle}
-                className="text-white p-2 hover:bg-gray-100/20 rounded-full transition-colors duration-300"
-                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              >
-                {isMobileMenuOpen ? (
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
+              </div>
+            </Link>
           </div>
-
-          {/* Mobile Search Bar - Full width */}
-          {isSearchOpen && (
-            <div className="mt-4 md:hidden animate-fadeIn">
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full px-4 py-3 pl-12 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-md"
-                  autoFocus
-                />
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleSearchToggle}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </form>
-            </div>
-          )}
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
-          isMobileMenuOpen
-            ? "bg-black/50 backdrop-blur-sm"
-            : "bg-transparent pointer-events-none"
-        }`}
-        onClick={closeMobileMenu}
-      ></div>
+      {/* --- MOBILE BOTTOM NAVIGATION --- */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-lg">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center py-2">
+            {/* Home */}
+            <Link href="/" className="flex flex-col items-center flex-1 group">
+              <div className="p-2 rounded-xl group-hover:bg-gray-50 transition-all duration-200">
+                <svg
+                  className="w-5 h-5 text-gray-600 group-hover:text-black"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+              </div>
+              <span className="text-[10px] font-medium text-gray-600 mt-0.5">
+                Home
+              </span>
+            </Link>
 
-      {/* Mobile Menu Sidebar */}
-      <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 md:hidden transform transition-transform duration-300 ease-in-out ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="p-6">
-          {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="shrink-0">
-              <Image
-                src="/images/amzworld-logo.jpg"
-                alt="Amazon World Logo"
-                width={60}
-                height={60}
-                className="rounded-lg"
-              />
-            </div>
-            <button
-              onClick={closeMobileMenu}
-              className="text-gray-700 hover:text-black p-2"
-              aria-label="Close menu"
+            {/* Collections */}
+            <Link
+              href="/collections"
+              className="flex flex-col items-center flex-1 group"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+              <div className="p-2 rounded-xl group-hover:bg-gray-50 transition-all duration-200">
+                <svg
+                  className="w-5 h-5 text-gray-600 group-hover:text-black"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
+                </svg>
+              </div>
+              <span className="text-[10px] font-medium text-gray-600 mt-0.5">
+                Collections
+              </span>
+            </Link>
 
-          {/* Mobile Navigation Menu */}
-          <div className="space-y-1">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={closeMobileMenu}
-                className="block text-gray-700 hover:text-black transition-colors duration-300 font-medium py-4 px-2 relative group border-b border-gray-100 last:border-b-0"
-              >
-                {item.name}
-                {/* Underline effect for mobile */}
-                <span className="absolute -bottom-0.5 left-2 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-1/3"></span>
-              </a>
-            ))}
-          </div>
+            {/* About */}
+            <Link
+              href="/about"
+              className="flex flex-col items-center flex-1 group"
+            >
+              <div className="p-2 rounded-xl group-hover:bg-gray-50 transition-all duration-200">
+                <svg
+                  className="w-5 h-5 text-gray-600 group-hover:text-black"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <span className="text-[10px] font-medium text-gray-600 mt-0.5">
+                About
+              </span>
+            </Link>
 
-          {/* Mobile CTA Button */}
-          <Link
-            href="/collections"
-            onClick={closeMobileMenu}
-            className="w-full mt-8 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors duration-300"
-          >
-            SHOP NOW
-          </Link>
-
-          {/* Cart Info in Mobile Menu */}
-          <div className="mt-8 pt-8 border-t border-gray-100">
-            <div className="flex items-center justify-between">
-              <Link
-                href="/cart"
-                onClick={closeMobileMenu}
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <div className="relative">
-                  <svg
-                    className="w-6 h-6 text-gray-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                    />
-                  </svg>
-                  {/* Dynamic Cart Badge in Mobile Menu */}
-                  {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <p className="text-gray-700 font-medium">Your Cart</p>
-                  <p className="text-gray-500 text-sm">
-                    {cartCount === 0
-                      ? "Cart is empty"
-                      : `${cartCount} item${cartCount !== 1 ? "s" : ""}`}
-                  </p>
-                </div>
-              </Link>
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-gray-600 text-sm">
-              Need help? <br />
-              <a
-                href="tel:+2349077080174"
-                className="text-black font-medium hover:underline"
-              >
-                +234 (907) 708 0174
-              </a>
-            </p>
+            {/* Contact */}
+            <Link
+              href="/contact"
+              className="flex flex-col items-center flex-1 group"
+            >
+              <div className="p-2 rounded-xl group-hover:bg-gray-50 transition-all duration-200">
+                <svg
+                  className="w-5 h-5 text-gray-600 group-hover:text-black"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <span className="text-[10px] font-medium text-gray-600 mt-0.5">
+                Contact
+              </span>
+            </Link>
           </div>
         </div>
-      </div>
+      </nav>
     </>
   );
 };

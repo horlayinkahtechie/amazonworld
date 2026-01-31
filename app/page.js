@@ -2,6 +2,7 @@ import Carousel from './_components/Carousel';
 import TopPicks from './_components/TopPicks';
 import HeroBanner from './_components/HeroBanners';
 import RecomendedProducts from './_components/RecomendedProducts';
+import HeroSection from './_components/Hero';
 
 export const metadata = {
   title: "Amazon World | Fashion & Clothing Brand in Lagos, Nigeria",
@@ -47,6 +48,7 @@ export default function Home() {
       <Carousel />
       <HeroBanner />
       <TopPicks />
+      <HeroSection/>
       <RecomendedProducts />
     </div>
   );

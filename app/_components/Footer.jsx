@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { BiLogoSnapchat, BiLogoTiktok } from "react-icons/bi";
-import { InstagramIcon } from "lucide-react";
+import { Heart, InstagramIcon } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -132,9 +132,20 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-gray-200 flex justify-between items-center">
+      <div className="mx-auto mt-16 pt-8 border-t border-gray-200 flex justify-between items-center">
         <p className="text-gray-400 text-xs">
-          © 2026 Amazon World. All rights reserved.
+          © {new Date().getFullYear()} Amazon World. All rights reserved.
+          <span className="hidden sm:inline mx-2">•</span>
+          <span className="flex items-center text-xs mt-1 sm:mt-0">
+            Made with{" "}
+            <Heart className="w-3 h-3 mx-1 text-red-500 fill-red-500" /> by{" "}
+            <Link
+              href="https://abdulsalamalao.com"
+              className="underline text-sky-400 hover:text-sky-300"
+            >
+              Abdul-salam
+            </Link>
+          </span>
         </p>
       </div>
     </footer>

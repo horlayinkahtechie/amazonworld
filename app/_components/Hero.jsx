@@ -4,22 +4,23 @@ import React from "react";
 const HeroSection = () => {
   return (
     <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {/* 1. Background Video */}
+      {/* Background Video */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover"
+        preload="metadata"
+        poster="/hero-poster.jpg"
+        className="absolute inset-0 z-0 w-full h-full object-cover"
       >
         <source src="/video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
       </video>
 
-      {/* 2. Dark Overlay (To make text pop) */}
-      <div className="absolute z-10 w-full h-full bg-black/50" />
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 z-10 bg-black/50" />
 
-      {/* 3. Content Container */}
+      {/* Content */}
       <div className="relative z-20 text-center px-4 max-w-3xl">
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
           Designed for the Bold.

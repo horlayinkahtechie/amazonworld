@@ -83,7 +83,7 @@ const products = [
   id: 5,
   title: "Female Half Cuts",
   category: "Female wears",
-  price: 40000,
+  price: 25000,
   in_stock: true,
   description: "Stylish female half-cut designed for comfort and everyday wear. Features a relaxed fit with breathable fabric, making it suitable for casual outings and warm weather.",
   specifications: {
@@ -102,7 +102,7 @@ const products = [
   id: 6,
   title: "Female Half Cuts",
   category: "Female wears",
-  price: 40000,
+  price: 25000,
   in_stock: true,
   description: "Comfortable female half-cut wear made for casual and home use. Designed with a soft feel and flexible fit for ease of movement and all-day comfort.",
   specifications: {
